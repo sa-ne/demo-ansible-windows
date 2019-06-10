@@ -1,0 +1,7 @@
+---
+# tasks file for win-install-choco-packages
+- name: Install Packages using Chocolatey
+  win_chocolatey:
+    name: "{{ item }}" 
+    state: present
+  loop: "{{ choco_packages }}"

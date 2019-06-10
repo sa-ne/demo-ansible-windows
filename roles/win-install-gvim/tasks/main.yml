@@ -1,0 +1,21 @@
+---
+# tasks file for win-install-gvim
+- name: create a new directory for the Installation files
+  win_file: 
+    path: "{{ installer_dir }}"
+    state: directory
+
+- name: Download the gvim msi installer
+  win_get_url:
+    url: "{{ gvim_installer_url }}"
+    dest: "{{ installer_dir }}\\vim.msi"
+
+- name: Install gvim
+  win_package:
+    path: "{{ installer_dir }}\\vim.msi"
+    arguments: /passive
+
+- name: delete installation files directory
+  win_file: 
+    path: "{{ installer_dir }}"
+    state: absent

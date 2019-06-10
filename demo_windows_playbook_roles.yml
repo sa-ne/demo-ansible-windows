@@ -1,0 +1,6 @@
+- name: Configuring a windows server with a simple website and some packages using roles
+  hosts: all
+  roles:
+  - win-configure-demo-webserver
+  - win-install-gvim
+  - win-install-choco-packages

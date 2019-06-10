@@ -1,0 +1,80 @@
+- name: Configuring a windows server with a simple website and some packages
+  hosts: all
+  vars:
+    iis_test_message: "Provisioned Through CFME"
+    ansible_connection: winrm
+    ansible_user: Administrator
+    ansible_winrm_server_cert_validation: ignore
+    web_port: 8080
+    web_dir: C:\wwwroot\ansibledemo
+    installer_dir: C:\Installers
+    gvim_installer_url: https://github.com/petrkle/vim-msi/releases/download/v8.1.55/vim-8.1.55.msi
+    choco_packages:
+      - git
+      - notepadplusplus
+      - putty
+  tasks:
+  - name: ping Windows Server 
+    win_ping:
+
+  - name: Install IIS (Web-Server and Web-Common-Http) Windows Features
+    win_feature:
+      name:
+      - Web-Server
+      - Web-Common-Http
+      state: present
+    register: win_feature
+
+  - name: create a new directory for the Ansible demo webiste files
+    win_file: 
+      path: "{{ web_dir }}"
+      state: directory
+
+  - name: copying the index html template 
+    win_template:
+      src: index.html.j2
+      dest: "{{ web_dir }}\\index.html"
+
+  - name: Open port {{ web_port }} on the windows firewall
+    win_firewall_rule:
+      name: ansible_demo_site_web_port
+      enable: yes
+      state: present
+      localport: "{{ web_port }}"
+      action: Allow
+      direction: In
+      protocol: Tcp
+
+  - name: Configure the Ansible demo webiste on IIS
+    win_iis_website:
+      name: "Ansible Test Site"
+      state: started
+      port: "{{ web_port }}"
+      physical_path: "{{ web_dir }}"
+
+
+  - name: create a new directory for the Installation files
+    win_file: 
+      path: "{{ installer_dir }}"
+      state: directory
+
+  - name: Download the gvim msi installer
+    win_get_url:
+      url: "{{ gvim_installer_url }}"
+      dest: "{{ installer_dir }}\\vim.msi"
+
+  - name: Install gvim
+    win_package:
+      path: "{{ installer_dir }}\\vim.msi"
+      arguments: /passive
+
+  - name: delete installation files directory
+    win_file: 
+      path: "{{ installer_dir }}"
+      state: absent
+      
+  - name: Install Packages using Chocolatey
+    win_chocolatey:
+      name: "{{ item }}" 
+      state: present
+    loop: "{{ choco_packages }}"

@@ -1,0 +1,39 @@
+---
+# tasks file for win-configure-demo-webserver
+- name: ping Windows Server 
+  win_ping:
+
+- name: Install IIS (Web-Server and Web-Common-Http) Windows Features
+  win_feature:
+    name:
+    - Web-Server
+    - Web-Common-Http
+    state: present
+  register: win_feature
+
+- name: create a new directory for the Ansible demo webiste files
+  win_file: 
+    path: "{{ web_dir }}"
+    state: directory
+
+- name: copying the index html template 
+  win_template:
+    src: index.html.j2
+    dest: "{{ web_dir }}\\index.html"
+
+- name: Open port {{ web_port }} on the windows firewall
+  win_firewall_rule:
+    name: ansible_demo_site_web_port
+    enable: yes
+    state: present
+    localport: "{{ web_port }}"
+    action: Allow
+    direction: In
+    protocol: Tcp
+
+- name: Configure the Ansible demo webiste on IIS
+  win_iis_website:
+    name: "Ansible Test Site"
+    state: started
+    port: "{{ web_port }}"
+    physical_path: "{{ web_dir }}"

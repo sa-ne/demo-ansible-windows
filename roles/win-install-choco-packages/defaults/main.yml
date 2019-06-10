@@ -1,0 +1,6 @@
+---
+# defaults file for win-install-choco-packages
+choco_packages:
+  - git
+  - notepadplusplus
+  - putty
