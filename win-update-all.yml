@@ -1,0 +1,4 @@
+- name: Update Windows Host
+  hosts: all
+  roles:
+  - win-update-all

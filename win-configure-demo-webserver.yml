@@ -1,0 +1,4 @@
+- name: Configure Windows demo webserver
+  hosts: all
+  roles:
+  - win-configure-demo-webserver

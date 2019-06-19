@@ -1,0 +1,4 @@
+- name: Install gvim
+  hosts: all
+  roles:
+  - win-install-gvim
