@@ -1,4 +1,5 @@
 - name: Configure Windows demo webserver
   hosts: all
+  gather_facts: no
   roles:
   - win-configure-demo-webserver

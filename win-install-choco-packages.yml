@@ -1,4 +1,5 @@
 - name: Install Chocolatey Packages
   hosts: all
+  gather_facts: no
   roles:
   - win-install-choco-packages
