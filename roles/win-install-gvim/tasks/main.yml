@@ -1,5 +1,9 @@
 ---
 # tasks file for win-install-gvim
+- name: Wait for system to become reachable over WinRM
+  wait_for_connection:
+    timeout: 900
+    
 - name: create a new directory for the Installation files
   win_file: 
     path: "{{ installer_dir }}"

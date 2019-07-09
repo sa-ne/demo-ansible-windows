@@ -1,5 +1,9 @@
 ---
 # tasks file for win-update-all
+- name: Wait for system to become reachable over WinRM
+  wait_for_connection:
+    timeout: 900
+    
 - name: ensure common OS updates are current
   win_updates:
   register: update_result

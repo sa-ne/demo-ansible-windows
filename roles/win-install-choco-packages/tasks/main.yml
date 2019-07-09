@@ -1,5 +1,9 @@
 ---
 # tasks file for win-install-choco-packages
+- name: Wait for system to become reachable over WinRM
+  wait_for_connection:
+    timeout: 900
+    
 - name: Install Packages using Chocolatey
   win_chocolatey:
     name: "{{ item }}" 
