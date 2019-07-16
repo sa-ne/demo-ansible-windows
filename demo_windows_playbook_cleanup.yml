@@ -1,0 +1,48 @@
+- name: Cleanup after demo, for non-transient Windows hosts
+  hosts: all
+  vars:
+    iis_test_message: "Provisioned Through CFME"
+    ansible_connection: winrm
+    ansible_user: Administrator
+    ansible_winrm_server_cert_validation: ignore
+    web_port: 8080
+    web_dir: C:\wwwroot\ansibledemo
+    installer_dir: C:\Installers
+    gvim_installer_url: https://github.com/petrkle/vim-msi/releases/download/v8.1.55/vim-8.1.55.msi
+    choco_packages:
+      - git
+      - notepadplusplus
+      - putty
+  tasks:
+  - name: ping Windows Server 
+    win_ping:
+
+  - name: Remove IIS (Web-Server, Web-Common-Http and Web-Mgmt-Console) Windows Features
+    win_feature:
+      name:
+      - Web-Server
+      - Web-Common-Http
+      - Web-Mgmt-Console
+      state: absent
+    register: win_feature
+
+  - name: Delete Ansible demo website files directory
+    win_file: 
+      path: "{{ web_dir }}"
+      state: absent
+      
+  - name: Delete port {{ web_port }} on the Windows firewall
+    win_firewall_rule:
+      name: ansible_demo_site_web_port
+      state: absent
+
+  - name: Remove the Ansible demo website on IIS
+    win_iis_website:
+      name: "Ansible Test Site"
+      state: absent
+        
+  - name: Remove Packages using Chocolatey
+    win_chocolatey:
+      name: "{{ item }}" 
+      state: absent
+    loop: "{{ choco_packages }}"
