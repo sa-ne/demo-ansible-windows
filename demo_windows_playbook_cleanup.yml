@@ -35,6 +35,10 @@
     win_firewall_rule:
       name: ansible_demo_site_web_port
       state: absent
+      localport: "{{ web_port }}"
+      action: Allow
+      direction: In
+      protocol: Tcp
 
   - name: Remove the Ansible demo website on IIS
     win_iis_website:
