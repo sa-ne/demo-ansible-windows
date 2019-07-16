@@ -17,6 +17,16 @@
   - name: ping Windows Server 
     win_ping:
 
+  - name: Delete Ansible demo website files directory
+    win_file: 
+      path: "{{ web_dir }}"
+      state: absent
+      
+  - name: Remove the Ansible demo website on IIS
+    win_iis_website:
+      name: "Ansible Test Site"
+      state: absent
+
   - name: Remove IIS (Web-Server, Web-Common-Http and Web-Mgmt-Console) Windows Features
     win_feature:
       name:
@@ -25,12 +35,7 @@
       - Web-Mgmt-Console
       state: absent
     register: win_feature
-
-  - name: Delete Ansible demo website files directory
-    win_file: 
-      path: "{{ web_dir }}"
-      state: absent
-      
+    
   - name: Delete port {{ web_port }} on the Windows firewall
     win_firewall_rule:
       name: ansible_demo_site_web_port
@@ -39,11 +44,6 @@
       action: Allow
       direction: In
       protocol: Tcp
-
-  - name: Remove the Ansible demo website on IIS
-    win_iis_website:
-      name: "Ansible Test Site"
-      state: absent
         
   - name: Remove Packages using Chocolatey
     win_chocolatey:
