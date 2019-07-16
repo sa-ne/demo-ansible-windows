@@ -1,4 +1,4 @@
-- name: Configuring a windows server with a simple website and some packages
+- name: Configuring a Windows server with a simple website and some packages
   hosts: all
   vars:
     iis_test_message: "Provisioned Through CFME"
@@ -17,25 +17,26 @@
   - name: ping Windows Server 
     win_ping:
 
-  - name: Install IIS (Web-Server and Web-Common-Http) Windows Features
+  - name: Install IIS (Web-Server, Web-Common-Http and Web-Mgmt-Console) Windows Features
     win_feature:
       name:
       - Web-Server
       - Web-Common-Http
+      - Web-Mgmt-Console
       state: present
     register: win_feature
 
-  - name: create a new directory for the Ansible demo webiste files
+  - name: Create a new directory for the Ansible demo website files
     win_file: 
       path: "{{ web_dir }}"
       state: directory
 
-  - name: copying the index html template 
+  - name: Copying the index html template 
     win_template:
       src: index.html.j2
       dest: "{{ web_dir }}\\index.html"
 
-  - name: Open port {{ web_port }} on the windows firewall
+  - name: Open port {{ web_port }} on the Windows firewall
     win_firewall_rule:
       name: ansible_demo_site_web_port
       enable: yes
@@ -45,7 +46,7 @@
       direction: In
       protocol: Tcp
 
-  - name: Configure the Ansible demo webiste on IIS
+  - name: Configure the Ansible demo website on IIS
     win_iis_website:
       name: "Ansible Test Site"
       state: started
@@ -53,7 +54,7 @@
       physical_path: "{{ web_dir }}"
 
 
-  - name: create a new directory for the Installation files
+  - name: Create a new directory for the Installation files
     win_file: 
       path: "{{ installer_dir }}"
       state: directory
@@ -68,7 +69,7 @@
       path: "{{ installer_dir }}\\vim.msi"
       arguments: /passive
 
-  - name: delete installation files directory
+  - name: Delete installation files directory
     win_file: 
       path: "{{ installer_dir }}"
       state: absent
